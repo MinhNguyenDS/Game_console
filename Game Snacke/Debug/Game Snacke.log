@@ -1,0 +1,7 @@
+﻿  Source.cpp
+c:\users\supperstars\documents\visual studio 2017\projects\game\game snacke\game snacke\source.cpp(474): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  console.cpp
+  Generating Code...
+c:\users\supperstars\documents\visual studio 2017\projects\game\game snacke\game snacke\source.cpp(468): warning C4715: 'ThangGame_ThuaGame': not all control paths return a value
+  Game Snacke.vcxproj -> C:\Users\SupperStars\Documents\Visual Studio 2017\Projects\Game\Game Snacke\Debug\Game Snake.exe
+  Game Snacke.vcxproj -> C:\Users\SupperStars\Documents\Visual Studio 2017\Projects\Game\Game Snacke\Debug\Game Snake.pdb (Partial PDB)

@@ -1,0 +1,461 @@
+﻿#include <stdio.h>
+#include <iostream>
+#include "console.h"
+#include <time.h>
+#include <conio.h>
+#include <string.h>
+#include <stdio.h>
+#include <Windows.h>
+
+
+
+# define consoleWidth 117
+# define consoleHeight 30 
+
+enum trangthai {UP, DOWN, LEFT, RIGHT};
+
+class ToaDo
+{
+public:
+	
+	int x;
+	int y;
+
+};
+
+class HoaQua:ToaDo
+{
+public:
+	ToaDo td;
+
+};
+
+
+
+class Snake:ToaDo
+{
+
+public :
+	int n = 0;
+	ToaDo dot[1000];
+	trangthai tt;
+
+};
+
+void KhoiTao(Snake &snake, HoaQua &hq)
+{
+	/*snake.n = 1; // con rắn có 'n' đốt
+	snake.dot[0].x = 0;
+	snake.dot[0].y = 0;*/
+
+	snake.n = 2; // con rắn có 'n' đốt
+	snake.dot[1].x = 1;
+	snake.dot[1].y = 1;
+	snake.dot[0].x = 2;
+	snake.dot[0].y = 1;
+	snake.tt = RIGHT;
+	
+
+
+
+	// hoa quả 
+	hq.td.x = 25; 
+	hq.td.y = 10;
+
+	
+}
+
+void HienThi(Snake snake, HoaQua &hq, int diem, char key1)
+{
+	// snake
+	clrscr();
+	TextColor(ColorCode_Pink);
+	for (int i = 0; i < snake.n; i++)
+	{
+		gotoXY(snake.dot[i].x, snake.dot[i].y);
+		putchar (111);
+
+	}
+	gotoXY(snake.dot[0].x, snake.dot[0].y);
+	putchar(148);
+
+
+
+	// hoa quả
+	 TextColor(ColorCode_Yellow);
+	 gotoXY(hq.td.x, hq.td.y);
+	 putchar(149);
+
+
+	 // tường
+	 TextColor(ColorCode_Red);
+	 for (int i = 0; i <= consoleHeight -2; i++) //  tường lề phải 
+	 {
+		 gotoXY(consoleWidth - 72 , i);
+		 putchar(178);
+	 }
+	 for (int i = 0; i <= consoleHeight - 2; i++) // tường lề trái
+	 {
+		 gotoXY(0, i);
+		 putchar(178);
+	 }
+	 for (int i = 0; i <= 45  - 2; i++) // tường lề trên
+	 {
+		 gotoXY(i+1, 0);
+		 putchar(254);
+	 }
+	 for (int i = 0; i <= 45 - 2; i++) // tường lề dưới
+	 {
+		 gotoXY( i+1, consoleHeight-2);
+		 putchar(254);
+	 }
+
+	// điểm
+	 TextColor(ColorCode_Yellow);
+	 gotoXY(47,8);
+	 std::cout << "--DIEM cua ban la : ";
+	 std::cout << diem  ;
+	 if (key1 == '2')
+	 {
+		 std::cout << "/20";
+	 }
+	 // hướng dẫn điều khiển
+	 {
+	 gotoXY(47, 0);
+	 std::cout << "--DIEU KHIEN :";
+	 gotoXY(64, 3);
+	 std::cout << "W";
+	 gotoXY(62, 4);
+	 std::cout << "A";
+	 gotoXY(64, 4);
+	 std::cout << "S";
+	 gotoXY(66, 4);
+	 std::cout << "D";
+	 gotoXY(62, 1);
+	 std::cout << "Di len";
+	 gotoXY(64, 2);
+	 std::cout << "^";
+	 gotoXY(47, 4);
+	 std::cout << "Di sang trai <";
+	 gotoXY(68, 4);
+	 std::cout << "> Di sang phai";
+	 gotoXY(64, 5);
+	 std::cout << "v";
+	 gotoXY(62, 6);
+	 std::cout << "Di xuong";
+	 }
+
+
+
+}
+
+
+void DieuKhien_Dichuyen(Snake &snake)
+{
+	// cái đuôi luôn theo sau cái đầu 
+	for (int i = snake.n - 1; i > 0; i--)
+		snake.dot[i] = snake.dot[i - 1];
+	// điểu khiển cái đầu
+	if (_kbhit())
+	{
+		char key = _getch();
+		if (key == 'a' || key == 'A')
+			snake.tt = LEFT;
+		else if (key == 'd' || key == 'D')
+			snake.tt = RIGHT;
+		else if (key == 's' || key == 'S')
+			snake.tt = DOWN;
+		else if (key == 'w' || key == 'W')
+			snake.tt = UP;
+
+
+
+	}
+	if (snake.tt == LEFT)
+		snake.dot[0].x--;
+	else if (snake.tt == RIGHT)
+		snake.dot[0].x++;
+	else if (snake.tt == UP)
+		snake.dot[0].y--;
+	else if (snake.tt == DOWN)
+		snake.dot[0].y++;
+
+}
+
+
+void XuLy(Snake &snake, HoaQua &hq, int &thoigianSleep, int &diem, char key1)
+{
+	if (snake.dot[0].x == hq.td.x && snake.dot[0].y == hq.td.y) // ăn được hoa quả 
+	{ 
+		// rắn ăn được hoa quả 
+		for (int i = snake.n; i > 0; i--)
+			snake.dot[i] = snake.dot[i - 1];
+		snake.n++;
+		if (snake.tt == LEFT)
+			snake.dot[0].x--;
+		else if (snake.tt == RIGHT)
+			snake.dot[0].x++;
+		else if (snake.tt == UP)
+			snake.dot[0].y--;
+		else if (snake.tt == DOWN)
+			snake.dot[0].y++;
+
+
+		// hoa quả
+
+		hq.td.x = 1 + rand () % 43  ;
+		hq.td.y = 1 + rand () % 27	;
+
+
+
+		// Chế độ chơi 
+		if (key1 == '2') {
+			thoigianSleep -= 8;
+		}
+
+
+		// điểm 
+		
+		diem++;
+
+	}
+}
+
+
+
+int	ThangGame_ThuaGame(Snake snake, char key1)
+{
+	// thua game 
+	if (snake.dot[0].y == consoleHeight-2|| snake.dot[0].y == 0|| snake.dot[0].x == 0 || snake.dot[0].x ==	consoleWidth -72 )
+	{
+		
+		return -1;
+	}
+	for (int i = 1; i <= snake.n; i++)
+
+	{
+		if (snake.dot[0].x == snake.dot[i].x && snake.dot[0].y == snake.dot[i].y)
+		{
+			return -2;
+		}
+
+	}
+	// thang game
+
+	if (snake.n == 22 && key1=='2')
+	{
+
+		return 1;
+	}
+
+
+}
+
+
+
+int main()
+{
+	srand(time(NULL));
+	Snake snake;
+	HoaQua hq;
+	KhoiTao(snake, hq);
+	int ma;
+	int thoigianSleep=150;
+	int diem = 0;
+	char key1 ;
+	char Ten[50];
+	int ChoiLai = 0;
+
+
+	//tạo lời thoại lúc kết thúc game (thực hành với sâu kí tự)
+	char loithoai1[] = "Dap dau` vo tuong` roi` !! ^^";
+	char loithoai2[] ="Choi do? qua, can duoi roi` !! ^^";
+
+	// giao diện
+	{
+
+		TextColor(ColorCode_Pink);
+		std::cout << "***********yyyyyyyyyyyyyyyyyyyyooooooyooyyyyooyyooooooyyooyyyooyyooooooyyyyyyyyyyyyyyyy***********" << std::endl;
+		std::cout << "*        yyyyyyyyyyyyyyyyyyys:://////s-:ooys-:yo:////-os:-syo:/yo://///syyyyyyyyyyyyyyyyy        *" << std::endl;
+		std::cout << "*      yyyyyyyyyyyyyyyyyyyyys-:yyyyyys--/-oy-:s:-syyy:-s:-so-/yy::syyyyyyyyyyyyyyyyyyyyyyyy      *" << std::endl;
+		std::cout << "*    yyyyyyyyyyyyyyyyyyyyyyys-:ooooyys-:s/-o-:s:-oooo:-s:-o-/yyy::ooooyyyyyyyyyyyyyyyyyyyyyyyy   *" << std::endl;
+		std::cout << "*  yyyyyyyyyyyyyyyyyyyyyyyyyyso////:/s-:ys//-:s:-////--s:-/-oyyy:-////yyyyyyyyyyyyyyyyyyyyyyyyy  *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyys-:s-:yyyy-:s:-syyy:-s:-s/-oyy::syyyyyyyyyyyyyyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyys-:s-:yyyy-:s:-syyy:-s:-s/-oyy::syyyyyyyyyyyyyyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyys:----:syyyys/////+sss/+yyyy/+y//syyy//s//yyy//yy//////yyyyyyyyyyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyy+::oyyyyyyyyyyyyyyyyyyyysysyyyyyyyysysyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyysyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysyyyyyyyysyyyyyyyyyyyyyyyyyyyyyy/:////:oyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysyyyyyysysysyyyysysysyyyyyyyyysooooooosyy/:/++/:/oooooooooooo *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysyyyyyyyyyysyyyysssyys-:/-/:-oyy:-oyy/-/::/-/:-/::/- *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysysysyyyysysy+-::.:::sys-:oys:-oyy:-+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy+:+ys/:+//+:+sy+::os+::sys::syy::oyy:-+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyo+oyy++++++:/yy+:/yyo::sys:/sys::oyy/:+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyo+oyy++++++:/yy+:/yyo::sys:/sys::oyy/:+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysysyyyyy+.:ss+.:yyo::sys::sys:-oyy:-+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy+-::-:-:yyo::sys-:oys:-oyy:-+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyssssssssyyo::/:/::syy::oyy:-oyyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "* yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysooo++++sys::/++/:+yyyyyyyyyyyyyyyyy *" << std::endl;
+		std::cout << "*  yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyys::/://:oyyyyyyyyyyyyyyyy  *" << std::endl;
+		std::cout << "*   yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy   *" << std::endl;
+		std::cout << "*     yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy      *" << std::endl;
+		std::cout << "*      yyyyyyyyyyyyyyyyyyyyyyyyyyyyyo+oo+oo+syyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy       *" << std::endl;
+		std::cout << "*        yyyyyyyyyyyyyyyyyyyyyyyyyyyy//y//s+syyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy          *" << std::endl;
+		std::cout << "**************************************************************************************************" << std::endl;
+		std::cout << "                                              The game is written By HOANG MINH-k97-QHQN (Minimax)" << std::endl;
+
+
+
+
+		gotoXY(14,14);
+		TextColor(ColorCode_Red);
+		std::cout << "***GAME SNAKE***2017";
+		gotoXY(9, 18);
+		TextColor(ColorCode_Green);
+		std:: cout << "I.Nhan 1 de bat dau` game (Binh Thuong)";
+		gotoXY(9, 19);
+		TextColor(ColorCode_Green);
+		std::cout << "II.Nhan 2 de bat dau` game (Thu Thach)";
+		gotoXY(9, 20);
+		TextColor(ColorCode_Green);
+		std ::cout << "III.Nhan 3 de thoat ";
+		while (1)
+		{
+			if (_kbhit())
+			{
+				 key1 = _getch();
+
+				if (key1 == '1')
+				{
+					break;
+				}
+				else if (key1 == '2')
+				{
+					clrscr();
+					TextColor(ColorCode_Red);
+					gotoXY(10,15);
+					std :: cout << "LUU Y : Con ran se nhanh dan` khi moi lan` ban an hoa qua!!";
+					std::  cout << " NHAN Enter !!!";
+					while (_getch() != 13);
+					break;
+				}
+				else if (key1 == '3')
+				{
+					break;
+				}
+			}
+		}
+		clrscr;
+	}
+	
+
+
+
+
+	if (ChoiLai == 0) //  xử lý khi chơi lại game ; 
+	{
+
+		// main game 
+		while (key1 == '1' || key1 == '2')
+		{
+
+
+			// hiển thị 
+			HienThi(snake, hq, diem, key1);
+
+			// điều khiển 
+			DieuKhien_Dichuyen(snake);
+
+
+			// xử lý 
+			XuLy(snake, hq, thoigianSleep, diem, key1);
+
+
+			// thua game , thắng game 
+
+			ma = ThangGame_ThuaGame(snake, key1);
+			if (ma == -1 || ma == -2)
+			{
+				int a = 0;
+				gotoXY(55, 14);
+				if (ma == -1)
+				{
+					std::cout << loithoai1;
+				}
+				if (ma == -2)
+				{
+					std::cout << loithoai2;
+				}
+				gotoXY(55, 15);
+				std::cout << "*****THUA GAME ROI ,HI HI ^^ *****";
+				gotoXY(60, 16);
+				std::cout << "--NHAN 'z' DE CHOI LAI. ";
+				gotoXY(60, 17);
+				std::cout << "--NHAN 'x' DE THOAT !!";
+
+
+				char key2;						// lấy mã
+				for (int i = 0; i == a; i++)
+				{
+					key2 = _getch();
+					if (key2 == 'z')
+					{
+						a++;
+					}
+					else if (key2 == 'x')
+					{
+						a++;
+					}
+					a++;
+				}
+				if (key2 == 'z')
+				{
+					// thoát game
+					ChoiLai = 1;
+					break;
+				}
+				if (key2 == 'x')
+				{
+					// chơi lại game
+					ChoiLai = 0;
+				}
+
+
+
+			}
+
+			if (ma == 1)
+			{
+				gotoXY(55, 15);
+				std::cout << "*****HEHEHE THANG ROI ,HI HI ^^ *****";
+				gotoXY(60, 16);
+				std::cout << "NHAN Enter DE THOAT !!";
+				while (_getch() != 13);
+				break;
+			}
+
+
+
+			Sleep(thoigianSleep); // là 1 nhịp game
+		}
+	}
+
+		clrscr();
+
+		// giao diện kết thúc game
+		while (key1 == '1' || key1 == '2')
+		{
+			std::cin >> Ten;
+			std::cout << Ten;
+			while (_getch() != 13);
+			break;
+
+
+		}
+
+
+	return 0;
+}
+
+
+// tạo giao diện kết thúc game và chơi lại hay thoát game khi nhấn phím
